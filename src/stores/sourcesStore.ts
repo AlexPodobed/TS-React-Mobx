@@ -1,9 +1,14 @@
-import { action, computed, observable } from 'mobx';
+import { action, computed, observable, toJS } from 'mobx';
 
 import agent from '../agent';
 import { ISource } from '../models/source.model';
 
 export class SourcesStore {
+  @computed
+  get activeSource(): ISource | undefined {
+    return toJS(this.sources.find(store => store.id === this.activeSourceId));
+  }
+
   @observable
   public loading = false;
 
@@ -12,11 +17,6 @@ export class SourcesStore {
 
   @observable
   public activeSourceId: string;
-
-
-  @computed get activeSource(): ISource | null {
-    return this.sources.find(store => store.id === this.activeSourceId) || null;
-  }
 
   @action
   public loadSourceList() {

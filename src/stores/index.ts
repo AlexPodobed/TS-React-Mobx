@@ -1,7 +1,9 @@
+import articleStore from './articleStore';
 import sourcesStore from './sourcesStore';
-import topHeadingStore from './topHeadingsStore';
+import uiStore from './uiStore';
 
 export default {
+  articleStore,
   sourcesStore,
-  topHeadingStore,
+  uiStore
 };

@@ -16,3 +16,9 @@ export interface IArticleResponse {
   totalResults: number;
   articles: IArticle[];
 }
+
+
+export enum ArticleType {
+  MostRecent = 'top-headlines',
+  Everything = 'everything'
+}

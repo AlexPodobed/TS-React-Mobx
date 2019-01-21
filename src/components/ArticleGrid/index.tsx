@@ -13,13 +13,17 @@ const styles = (theme: Theme) => createStyles({
 
 interface IArticleGridProps extends WithStyles<typeof styles> {
   list: IArticle[];
+  handleClick: (article: IArticle) => void
 }
 
-const ArticleGrid: React.SFC<IArticleGridProps> = ({ list }) => {
+const ArticleGrid: React.SFC<IArticleGridProps> = ({ list, handleClick }) => {
   return (
     <Grid container={true} spacing={24}>
       {list.map((article, index) =>
-        <Grid item={true} sm={12} md={6} key={index}>
+        <Grid item={true}
+              sm={12} md={6}
+              key={index}
+              onClick={handleClick.bind(null, article)}>
           <ArticleCard article={article}/>
         </Grid>
       )}

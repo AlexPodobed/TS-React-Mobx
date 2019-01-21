@@ -6,7 +6,6 @@ import { Fragment } from 'react';
 import List from '@material-ui/core/List/List';
 import ListItem from '@material-ui/core/ListItem/ListItem';
 import ListItemText from '@material-ui/core/ListItemText/ListItemText';
-import { ISource } from '../../models/source.model';
 import { SourcesStore } from '../../stores/sourcesStore';
 
 
@@ -25,11 +24,11 @@ export default class SourcesContainer extends React.Component<ISourcesContainerP
   }
 
   public render() {
-    const { sources, loading } = this.props.sourcesStore!;
+    const { loading } = this.props.sourcesStore!;
 
-    return <Fragment>
+    return <Fragment>`
       {this.renderLoading(loading)}
-      {this.renderSourceList(sources)}
+      {this.renderSourceList()}
     </Fragment>;
   }
 
@@ -46,15 +45,19 @@ export default class SourcesContainer extends React.Component<ISourcesContainerP
     selectActiveSource(id);
   }
 
-  private renderSourceList(list: ISource[]) {
-    if (!list) {
+  private renderSourceList() {
+    const { sources, activeSource } = this.props.sourcesStore!;
+
+
+    if (!sources) {
       return;
     }
 
     return <List>
-      {list.map(source => {
+      {sources.map(source => {
           const handleClick = () => this.selectActive(source.id);
           return <ListItem
+            selected={activeSource ? source.id === activeSource.id : false}
             onClick={handleClick}
             button={true}
             key={source.id}>

@@ -2,14 +2,14 @@ import * as React from 'react';
 import { Fragment } from 'react';
 import { Route, Switch, withRouter } from 'react-router';
 import Layout from 'src/components/Layout';
-import TopHeadingsContainer from './TopHeadings';
+import ArticlesContainer from './Articles';
 
 const Routes = () => {
   return (
     <Fragment>
       <Switch>
         <Layout>
-          <Route path='' component={TopHeadingsContainer}/>
+          <Route path='' component={ArticlesContainer}/>
         </Layout>
       </Switch>
     </Fragment>

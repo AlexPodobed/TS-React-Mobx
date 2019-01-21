@@ -1,0 +1,23 @@
+.image-block {
+  &__empty {
+    background: #bdbdbd;
+    display: flex;
+    flex-flow: row wrap;
+    align-items: center;
+    justify-content: center;
+
+    &:before {
+      content: '';
+      padding-top: 56.25%;
+    }
+
+    svg {
+      font-size: 148px;
+      color: #6d6d6d;
+    }
+  }
+
+  &__media {
+    padding-top: 56.25%;
+  }
+}

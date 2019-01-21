@@ -16,7 +16,7 @@ function buildUrl(path: string): string {
 const TopHeadlines = {
   all: () => axios.get<IArticleResponse>(buildUrl('/top-headlines?country=us')),
   byCategory: (category: string) => axios.get<IArticleResponse>(buildUrl(`/top-headlines?country=us&category=${category}`)),
-  bySource: (source: string) => axios.get<IArticleResponse>(buildUrl(`/top-headlines?country=us&sources=${source}`)),
+  bySource: (source: string) => axios.get<IArticleResponse>(buildUrl(`/top-headlines?sources=${source}`)),
   search: (query: string) => axios.get<IArticleResponse>(buildUrl(`/top-headlines?country=us&q=${query}`))
 };
 

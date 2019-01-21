@@ -1,34 +1,18 @@
-import AppBar from '@material-ui/core/AppBar/AppBar';
 import CssBaseline from '@material-ui/core/CssBaseline/CssBaseline';
 import Divider from '@material-ui/core/Divider/Divider';
 import Drawer from '@material-ui/core/Drawer';
 import IconButton from '@material-ui/core/IconButton/IconButton';
 import { createStyles, Theme, withStyles, WithStyles } from '@material-ui/core/styles';
-import Toolbar from '@material-ui/core/Toolbar/Toolbar';
 import ChevronLeftIcon from '@material-ui/icons/ChevronLeft';
 import ChevronRightIcon from '@material-ui/icons/ChevronRight';
-import MenuIcon from '@material-ui/icons/Menu';
 import classNames from 'classnames';
 import * as React from 'react';
+import { drawerWidth } from '../../constants/sizes';
 import SourcesContainer from '../../containers/Sources';
+import Header from '../Header';
 
-const drawerWidth = 240;
 
 const styles = (theme: Theme) => createStyles({
-  appBar: {
-    transition: theme.transitions.create(['margin', 'width'], {
-      duration: theme.transitions.duration.leavingScreen,
-      easing: theme.transitions.easing.sharp,
-    }),
-  },
-  appBarShift: {
-    marginLeft: drawerWidth,
-    transition: theme.transitions.create(['margin', 'width'], {
-      duration: theme.transitions.duration.enteringScreen,
-      easing: theme.transitions.easing.easeOut,
-    }),
-    width: `calc(100% - ${drawerWidth}px)`,
-  },
   content: {
     flexGrow: 1,
     marginLeft: -drawerWidth,
@@ -56,15 +40,12 @@ const styles = (theme: Theme) => createStyles({
     ...theme.mixins.toolbar,
     justifyContent: 'flex-end',
   },
+
+  drawerContent: {
+    overflowY: 'auto'
+  },
   drawerPaper: {
     width: drawerWidth,
-  },
-  hide: {
-    display: 'none',
-  },
-  menuButton: {
-    marginLeft: 12,
-    marginRight: 20,
   },
   root: {
     display: 'flex',
@@ -99,25 +80,10 @@ class Layout extends React.Component<ILayoutProps, ILayoutState> {
       <div className={classes.root}>
         <CssBaseline/>
 
-        <AppBar
-          position='fixed'
-          className={classNames(classes.appBar, {
-            [classes.appBarShift]: open
-          })}
-        >
-          <Toolbar>
-            <IconButton
-              color="inherit"
-              aria-label="Open drawer"
-              onClick={this.handleDrawerOpen}
-              className={classNames(classes.menuButton, open && classes.hide)}
-            >
-              <MenuIcon/>
-            </IconButton>
-            <h3>News Feed App</h3>
-          </Toolbar>
-        </AppBar>
-
+        <Header
+          openDrawer={this.handleDrawerOpen}
+          open={open}
+        />
 
         <Drawer
           className={classes.drawer}
@@ -134,7 +100,9 @@ class Layout extends React.Component<ILayoutProps, ILayoutState> {
             </IconButton>
           </div>
           <Divider/>
-          <SourcesContainer/>
+          <div className={classes.drawerContent}>
+            <SourcesContainer/>
+          </div>
         </Drawer>
 
         <main className={classNames(classes.content, {
