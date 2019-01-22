@@ -22,3 +22,13 @@ export enum ArticleType {
   MostRecent = 'top-headlines',
   Everything = 'everything'
 }
+
+
+export interface IArticleRequestParams {
+  sources?: string;
+  country?: string;
+  category?: string;
+  q?: string;
+  pageSize?: number;
+  page?: number;
+}

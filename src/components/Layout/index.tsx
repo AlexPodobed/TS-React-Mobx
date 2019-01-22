@@ -1,3 +1,4 @@
+import Button from '@material-ui/core/Button/Button';
 import CssBaseline from '@material-ui/core/CssBaseline/CssBaseline';
 import Divider from '@material-ui/core/Divider/Divider';
 import Drawer from '@material-ui/core/Drawer';
@@ -6,9 +7,11 @@ import { createStyles, Theme, withStyles, WithStyles } from '@material-ui/core/s
 import ChevronLeftIcon from '@material-ui/icons/ChevronLeft';
 import ChevronRightIcon from '@material-ui/icons/ChevronRight';
 import classNames from 'classnames';
+import { inject, observer } from 'mobx-react';
 import * as React from 'react';
 import { drawerWidth } from '../../constants/sizes';
 import SourcesContainer from '../../containers/Sources';
+import { SourcesStore } from '../../stores/sourcesStore';
 import Header from '../Header';
 
 
@@ -38,7 +41,7 @@ const styles = (theme: Theme) => createStyles({
     display: 'flex',
     padding: '0 8px',
     ...theme.mixins.toolbar,
-    justifyContent: 'flex-end',
+    justifyContent: 'space-between',
   },
 
   drawerContent: {
@@ -47,6 +50,9 @@ const styles = (theme: Theme) => createStyles({
   drawerPaper: {
     width: drawerWidth,
   },
+  hidden: {
+    visibility: 'hidden'
+  },
   root: {
     display: 'flex',
   },
@@ -54,12 +60,15 @@ const styles = (theme: Theme) => createStyles({
 
 
 interface ILayoutProps extends WithStyles<typeof styles, true> {
+  sourcesStore?: SourcesStore;
 }
 
 interface ILayoutState {
   open: boolean;
 }
 
+@inject('sourcesStore')
+@observer
 class Layout extends React.Component<ILayoutProps, ILayoutState> {
   public state = {
     open: true
@@ -75,6 +84,7 @@ class Layout extends React.Component<ILayoutProps, ILayoutState> {
 
   public render() {
     const { theme, classes, children } = this.props;
+    const { activeSource, clearActiveSource } = this.props.sourcesStore!;
     const { open } = this.state;
     return (
       <div className={classes.root}>
@@ -95,6 +105,11 @@ class Layout extends React.Component<ILayoutProps, ILayoutState> {
           }}
         >
           <div className={classes.drawerHeader}>
+            <Button
+              onClick={clearActiveSource}
+              className={classNames({ [classes.hidden]: !activeSource })}>
+              reset
+            </Button>
             <IconButton onClick={this.handleDrawerClose}>
               {theme.direction === 'ltr' ? <ChevronLeftIcon/> : <ChevronRightIcon/>}
             </IconButton>

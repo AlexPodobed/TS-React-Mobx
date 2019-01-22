@@ -1,7 +1,9 @@
 import Grid from '@material-ui/core/Grid';
 import { createStyles, Theme, withStyles, WithStyles } from '@material-ui/core/styles';
 import * as React from 'react';
+import { compose } from 'recompose';
 
+import { IWithInfinityScrollProps, witInfinityScroll } from '../../hocs/withInfinityScroll';
 import { IArticle } from '../../models/article.model';
 import ArticleCard from '../ArticleCard';
 
@@ -11,12 +13,12 @@ const styles = (theme: Theme) => createStyles({
   },
 });
 
-interface IArticleGridProps extends WithStyles<typeof styles> {
+interface IArticleGridProps {
   list: IArticle[];
   handleClick: (article: IArticle) => void
 }
 
-const ArticleGrid: React.SFC<IArticleGridProps> = ({ list, handleClick }) => {
+const ArticleGrid: React.SFC<IArticleGridProps & WithStyles<typeof styles>> = ({ list, handleClick }) => {
   return (
     <Grid container={true} spacing={24}>
       {list.map((article, index) =>
@@ -32,4 +34,9 @@ const ArticleGrid: React.SFC<IArticleGridProps> = ({ list, handleClick }) => {
 };
 
 
-export default withStyles(styles)(ArticleGrid);
+const enhance = compose<IArticleGridProps, IArticleGridProps & IWithInfinityScrollProps>(
+  witInfinityScroll,
+  withStyles(styles)
+);
+
+export default enhance(ArticleGrid);

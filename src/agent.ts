@@ -1,25 +1,37 @@
 import axios from 'axios';
 
+import { isUndefined, omitBy } from 'lodash';
 import { RSS_API_KEY, RSS_API_URL } from './constants/config';
-import { IArticleResponse } from './models/article.model';
+import { ArticleType, IArticleRequestParams, IArticleResponse } from './models/article.model';
 import { ISourceResponse } from './models/source.model';
-
-// EVERYTHING
-// https://newsapi.org/v2/everything?q=bitcoin&apiKey=822725d39e244c458ef59aac989bf232
-// https://newsapi.org/v2/everything?q=apple&from=2019-01-10&to=2019-01-10&sortBy=popularity&apiKey=822725d39e244c458ef59aac989bf232
-// https://newsapi.org/v2/everything?domains=wsj.com,nytimes.com&apiKey=822725d39e244c458ef59aac989bf232
 
 function buildUrl(path: string): string {
   return `${RSS_API_URL}${path}&apiKey=${RSS_API_KEY}`;
 }
 
-const TopHeadlines = {
-  all: () => axios.get<IArticleResponse>(buildUrl('/top-headlines?country=us')),
-  byCategory: (category: string) => axios.get<IArticleResponse>(buildUrl(`/top-headlines?country=us&category=${category}`)),
-  bySource: (source: string) => axios.get<IArticleResponse>(buildUrl(`/top-headlines?sources=${source}`)),
-  search: (query: string) => axios.get<IArticleResponse>(buildUrl(`/top-headlines?country=us&q=${query}`))
-};
+function prepareUrl(path: string, params: IArticleRequestParams = {}): string {
+  const baseUrl = `${RSS_API_URL}${path}?apiKey=${RSS_API_KEY}`;
 
+
+  const formattedParams = omitBy(params, isUndefined);
+  let queryParams = Object.keys(formattedParams).reduce((result, key) => `${result}&${key}=${formattedParams[key]}`, '');
+
+  // handle empty query
+  if (!params.q && !params.sources) {
+    if (path.includes(ArticleType.MostRecent)) {
+      queryParams += '&country=us';
+    }
+    if (path.includes(ArticleType.Everything)) {
+      queryParams += '&q="a"';
+    }
+  }
+
+  return baseUrl + queryParams;
+}
+
+const Articles = {
+  all: (type: ArticleType, params: IArticleRequestParams) => axios.get<IArticleResponse>(prepareUrl(`/${type}`, params))
+};
 
 const Sources = {
   all: () => axios.get<ISourceResponse>(buildUrl('/sources?language=en'))
@@ -27,6 +39,6 @@ const Sources = {
 
 
 export default {
+  Articles,
   Sources,
-  TopHeadlines,
 };

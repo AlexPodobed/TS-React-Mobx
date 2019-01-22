@@ -26,7 +26,7 @@ export default class SourcesContainer extends React.Component<ISourcesContainerP
   public render() {
     const { loading } = this.props.sourcesStore!;
 
-    return <Fragment>`
+    return <Fragment>
       {this.renderLoading(loading)}
       {this.renderSourceList()}
     </Fragment>;

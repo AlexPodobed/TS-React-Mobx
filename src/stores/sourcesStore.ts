@@ -1,7 +1,9 @@
 import { action, computed, observable, toJS } from 'mobx';
 
 import agent from '../agent';
+import { API_ENABLED } from '../constants/config';
 import { ISource } from '../models/source.model';
+import { SourceListMocked } from './mock';
 
 export class SourcesStore {
   @computed
@@ -16,10 +18,16 @@ export class SourcesStore {
   public sources: ISource[] = [];
 
   @observable
-  public activeSourceId: string;
+  public activeSourceId: string | undefined;
 
   @action
   public loadSourceList() {
+    if (!API_ENABLED) {
+      // todo: remove it!
+      this.sources = SourceListMocked;
+      return Promise.resolve(true);
+    }
+
     this.loading = true;
     return agent.Sources.all()
       .then(({ data }) => {
@@ -33,6 +41,11 @@ export class SourcesStore {
   @action
   public selectActiveSource = (id: string) => {
     this.activeSourceId = id;
+  };
+
+  @action
+  public clearActiveSource = () => {
+    this.activeSourceId = undefined;
   };
 }
 

@@ -1,11 +1,30 @@
 import { action, computed, observable, reaction, toJS } from 'mobx';
 
 import agent from '../agent';
-import { ArticleType, IArticle } from '../models/article.model';
+import { API_ENABLED } from '../constants/config';
+import { ArticleType, IArticle, IArticleRequestParams } from '../models/article.model';
+import { ArticleListMocked } from './mock';
 import sourceStore from './sourcesStore';
 import uiStore from './uiStore';
 
 export class ArticleStore {
+  get getParams(): IArticleRequestParams {
+    return {
+      q: this.searchQuery,
+      sources: sourceStore.activeSourceId,
+      page: this.page,
+      pageSize: this.pageSize
+    };
+  }
+
+  @computed get activeType() {
+    return toJS(this.type);
+  }
+
+  @computed get activeArticle() {
+    return toJS(this.selectedArticle);
+  }
+
   @observable
   public loading = false;
 
@@ -19,33 +38,32 @@ export class ArticleStore {
   public articles: IArticle[] = [];
 
   @observable
+  public pageSize = 20;
+
+  @observable
+  public page = 1;
+
+  @observable
   private type: ArticleType = ArticleType.MostRecent;
 
   @observable
   private selectedArticle: IArticle | undefined;
 
-
   constructor() {
     reaction(
       () => sourceStore.activeSourceId,
-      (source) => {
-        uiStore.scrollToTop();
-        this.loadBySource(source);
-      }
+      () => this.fetchAndScrollTop()
     );
 
     reaction(
       () => this.searchQuery,
-      (query) => this.searchBy(query)
+      () => this.fetchAndScrollTop()
     );
-  }
 
-  @computed get activeType() {
-    return toJS(this.type);
-  }
-
-  @computed get activeArticle() {
-    return toJS(this.selectedArticle);
+    reaction(
+      () => this.type,
+      () => this.fetchAndScrollTop()
+    );
   }
 
   @action
@@ -64,48 +82,60 @@ export class ArticleStore {
     this.selectedArticle = undefined;
   };
 
+  @action
+  public setPage = (page: number) => this.page = page;
 
   @action
-  public loadTopHeadlines() {
-    this.loading = true;
+  public setPageSize = (size: number) => this.pageSize = size;
 
-    return agent.TopHeadlines.all()
+  @action
+  public fetchArticles() {
+    if (!API_ENABLED) {
+      return this.returnMockedData();
+    }
+
+    this.loading = true;
+    this.page = 1;
+
+    return agent.Articles.all(this.activeType, this.getParams)
       .then(({ data }) => {
-        this.total = data.totalResults;
-        this.articles = data.articles;
         this.loading = false;
+        this.articles = data.articles;
+        this.total = data.totalResults;
         return data;
       })
       .catch(() => this.loading = false);
   }
 
   @action
-  public loadBySource(source: string) {
-    this.loading = true;
+  public fetchMoreArticles = (page: number) => {
+    if (!API_ENABLED) {
+      return this.returnMockedData();
+    }
 
-    return agent.TopHeadlines.bySource(source)
+    this.loading = true;
+    this.page = page;
+
+    return agent.Articles.all(this.activeType, this.getParams)
       .then(({ data }) => {
-        this.total = data.totalResults;
-        this.articles = data.articles;
         this.loading = false;
+        this.articles = [...this.articles.slice(), ...data.articles];
+        this.total = data.totalResults;
         return data;
       })
       .catch(() => this.loading = false);
+  };
+
+  private fetchAndScrollTop() {
+    this.fetchArticles().then(() => uiStore.scrollToTop());
   }
 
-
-  @action
-  public searchBy(q: string) {
-    this.loading = true;
-
-    return agent.TopHeadlines.search(q)
-      .then(({ data }) => {
-        this.loading = false;
-        this.articles = data.articles;
-        this.total = data.totalResults;
-        return data;
-      })
-      .catch(() => this.loading = false);
+  // todo: remove it!
+  private returnMockedData() {
+    // @ts-ignore
+    this.articles = ArticleListMocked;
+    this.total = 100;
+    return Promise.resolve(true);
   }
 }
 

@@ -36,8 +36,14 @@ class ArticlesContainer extends React.Component<IArticlesContainerProps, IArticl
     const { articleStore } = this.props!;
 
     if (articleStore) {
-      articleStore.loadTopHeadlines();
+      articleStore.fetchArticles();
     }
+  }
+
+  public fetchMore(page: number): void {
+    const { fetchMoreArticles } = this.props.articleStore!;
+
+    fetchMoreArticles(page);
   }
 
   public handleClose = () => {
@@ -54,25 +60,30 @@ class ArticlesContainer extends React.Component<IArticlesContainerProps, IArticl
     this.setState(prevState => ({ open: !prevState.open }));
   };
 
+
   public render() {
-    const { loading, articles, activeArticle } = this.props.articleStore!;
+    const { loading, articles, activeArticle, total, page } = this.props.articleStore!;
     const { open } = this.state;
 
     return (
       <Fragment>
         {this.printLoader(loading)}
         <div className="article-list">
-          <ArticleGrid list={articles} handleClick={this.openModal}/>
+          <ArticleGrid
+            total={total}
+            size={articles.length}
+            loading={loading}
+            list={articles}
+            onLazyLoad={this.fetchMore.bind(this, page + 1)}
+            handleClick={this.openModal}/>
         </div>
         {activeArticle
-          ? <ArticleDialog
-            open={open}
-            article={activeArticle}
-            handleClose={this.handleClose}
+          ? <ArticleDialog open={open}
+                           article={activeArticle}
+                           handleClose={this.handleClose}
           />
           : null
         }
-
       </Fragment>
     );
   }
