@@ -1,6 +1,5 @@
 import { Provider } from 'mobx-react';
 import * as React from 'react';
-
 import { BrowserRouter } from 'react-router-dom';
 import './assets/app.scss';
 import './assets/styles/index.css';

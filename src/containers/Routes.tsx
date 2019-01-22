@@ -1,3 +1,4 @@
+import DevTools from 'mobx-react-devtools';
 import * as React from 'react';
 import { Fragment } from 'react';
 import { Route, Switch, withRouter } from 'react-router';
@@ -12,6 +13,7 @@ const Routes = () => {
           <Route path='' component={ArticlesContainer}/>
         </Layout>
       </Switch>
+      <DevTools/>
     </Fragment>
   );
 };

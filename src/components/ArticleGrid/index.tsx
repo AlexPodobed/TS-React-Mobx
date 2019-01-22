@@ -35,7 +35,7 @@ const ArticleGrid: React.SFC<IArticleGridProps & WithStyles<typeof styles>> = ({
 
 
 const enhance = compose<IArticleGridProps, IArticleGridProps & IWithInfinityScrollProps>(
-  witInfinityScroll,
+  witInfinityScroll(200),
   withStyles(styles)
 );
 

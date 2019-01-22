@@ -89,26 +89,12 @@ export class ArticleStore {
   public setPageSize = (size: number) => this.pageSize = size;
 
   @action
-  public fetchArticles() {
-    if (!API_ENABLED) {
-      return this.returnMockedData();
-    }
-
-    this.loading = true;
-    this.page = 1;
-
-    return agent.Articles.all(this.activeType, this.getParams)
-      .then(({ data }) => {
-        this.loading = false;
-        this.articles = data.articles;
-        this.total = data.totalResults;
-        return data;
-      })
-      .catch(() => this.loading = false);
-  }
+  public fetchArticles = () => this._loadArticles(false);
 
   @action
-  public fetchMoreArticles = (page: number) => {
+  public fetchMoreArticles = (page: number) => this._loadArticles(true, page);
+
+  private _loadArticles(lazy = false, page = 1) {
     if (!API_ENABLED) {
       return this.returnMockedData();
     }
@@ -119,12 +105,12 @@ export class ArticleStore {
     return agent.Articles.all(this.activeType, this.getParams)
       .then(({ data }) => {
         this.loading = false;
-        this.articles = [...this.articles.slice(), ...data.articles];
+        this.articles = lazy ? [...this.articles.slice(), ...data.articles] : data.articles;
         this.total = data.totalResults;
         return data;
       })
       .catch(() => this.loading = false);
-  };
+  }
 
   private fetchAndScrollTop() {
     this.fetchArticles().then(() => uiStore.scrollToTop());

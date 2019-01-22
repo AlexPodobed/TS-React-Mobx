@@ -33,11 +33,9 @@ class ArticlesContainer extends React.Component<IArticlesContainerProps, IArticl
   }
 
   public fetchList(): void {
-    const { articleStore } = this.props!;
+    const { fetchArticles } = this.props.articleStore!;
 
-    if (articleStore) {
-      articleStore.fetchArticles();
-    }
+    fetchArticles();
   }
 
   public fetchMore(page: number): void {
@@ -50,14 +48,14 @@ class ArticlesContainer extends React.Component<IArticlesContainerProps, IArticl
     const { resetActiveArticle } = this.props.articleStore!;
 
     resetActiveArticle();
-    this.setState(prevState => ({ open: !prevState.open }));
+    this.setState({ open: false });
   };
 
   public openModal = (article: IArticle) => {
     const { setActiveArticle } = this.props.articleStore!;
 
     setActiveArticle(article);
-    this.setState(prevState => ({ open: !prevState.open }));
+    this.setState({ open: true });
   };
 
 
